@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <meta
+  name="description"
+  content="Simple music player website that plays from a self-hosted server">
+    <link rel="stylesheet" href="style.css" async>
+    <script type="module" src="music.js" async></script>
+    <script type="module" src="splash.js" async></script>
+    <link rel="icon" type="image/x-icon" href="music-icon.ico">
+    <title>Music Player</title>
+    
+</head>
+<body>
+    <div class="music">
+        <div class="custom-player">
+            <div class="track-info">
+                <div class="track-title" id="track-title">Loading...</div>
+                <div class="track-artist">Music Player</div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" id="prev-btn">⏮</button>
+                <button class="control-btn play-btn" id="play-btn">▶</button>
+                <button class="control-btn" id="next-btn">⏭</button>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="time-display">
+                    <span id="current-time">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
+
+            <div class="volume-container">
+                <span>🔊</span>
+                <label for="volume-slider">Volume</label>
+                <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="50">
+            </div>
+        </div>
+    </div>
+    <div class="photo">
+        <a href="#" id="photo-link">
+            <img id="photo" src="" alt="">
+        </a>
+        <p id="credit">Photo provided by pexels</p>
+    </div>
+</body>
+</html>
