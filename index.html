@@ -14,12 +14,13 @@
     <script type="module" src="music.js" async></script>
     <script type="module" src="splash.js" async></script>
     <script type="module" src="weather.js" async></script>
+    <script type="module" src="time.js" async></script>
     <link rel="icon" type="image/x-icon" href="dashboard.ico" />
     <title>Dashboard</title>
   </head>
   <body>
     <div class="music">
-      <div class="custom-player">
+      <div class="internal">
         <div class="track-info">
           <div class="track-title" id="track-title">Loading...</div>
           <div class="track-artist">Music Player</div>
@@ -55,11 +56,18 @@
         </div>
       </div>
     </div>
-    <div class="base">
+    <div class="base text">
+      <div class="internal">
       <div class="temperature">20</div>
       <div class="weather"></div>
       <div class="wind">3 km/h</div>
       <div class="apparent">18</div>
+      </div>
+    </div>
+    <div class="base">
+      <div class="internal">
+        <div class="clock text">00:00:00</div>
+      </div>
     </div>
     <div class="photo">
       <a href="#" id="photo-link">

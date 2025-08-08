@@ -47,7 +47,7 @@ body {
 }
 
 /* Custom player container */
-.custom-player {
+.internal {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
   padding: 25px;
@@ -141,6 +141,7 @@ body {
   font-size: 0.9em;
   color: rgba(255, 255, 255, 0.7);
   margin-top: 10px;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 /* Volume control */
@@ -188,4 +189,13 @@ body {
   color: white;
   border-radius: 5px;
   z-index: 1;
+}
+
+.text {
+  color: white;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.clock {
+  font-size: 4em;
 }
