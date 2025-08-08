@@ -1,0 +1,94 @@
+import { fetchWeatherApi } from "openmeteo";
+
+export {
+	set_weather
+};
+
+const params = {
+  latitude: 51.5085,
+  longitude: -0.1257,
+  models: "ukmo_seamless",
+  current: [
+    "temperature_2m",
+    "apparent_temperature",
+    "weather_code",
+    "wind_speed_10m",
+  ],
+};
+const url = "https://api.open-meteo.com/v1/forecast";
+const responses = await fetchWeatherApi(url, params);
+
+// Process first location. Add a for-loop for multiple locations or weather models
+const response = responses[0];
+
+// Attributes for timezone and location
+const latitude = response.latitude();
+const longitude = response.longitude();
+const elevation = response.elevation();
+const utcOffsetSeconds = response.utcOffsetSeconds();
+
+console.log(
+  `\nCoordinates: ${latitude}°N ${longitude}°E`,
+  `\nElevation: ${elevation}m asl`,
+  `\nTimezone difference to GMT+0: ${utcOffsetSeconds}s`
+);
+
+const current = response.current()!;
+
+// Note: The order of weather variables in the URL query and the indices below need to match!
+const weatherData = {
+  current: {
+    time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
+    temperature_2m: current.variables(0)!.value(),
+    apparent_temperature: current.variables(1)!.value(),
+    weather_code: current.variables(2)!.value(),
+    wind_speed_10m: current.variables(3)!.value(),
+  },
+};
+
+// 'weatherData' now contains a simple structure with arrays with datetime and weather data
+console.log(
+  `\nCurrent time: ${weatherData.current.time}`,
+  `\nCurrent temperature_2m: ${weatherData.current.temperature_2m}`,
+  `\nCurrent apparent_temperature: ${weatherData.current.apparent_temperature}`,
+  `\nCurrent weather_code: ${weatherData.current.weather_code}`,
+  `\nCurrent wind_speed_10m: ${weatherData.current.wind_speed_10m}`
+);
+
+async function set_weather() {
+  const temperatureEl = document.querySelector("temperature");
+  const weatherEl = document.querySelector("weather");
+  const windEl = document.querySelector("wind");
+  const apparentEl = document.querySelector("apparent");
+
+  if (!temperatureEl || !weatherEl || !windEl || !apparentEl) {
+    console.error("One or more elements not found");
+    return;
+  }
+
+  temperatureEl.textContent = `Temperature: ${weatherData.current.temperature_2m}°C`;
+  weatherEl.textContent = `Weather: ${weatherData.current.weather_code}`;
+  windEl.textContent = `Wind Speed: ${weatherData.current.wind_speed_10m} m/s`;
+  apparentEl.textContent = `Apparent Temperature: ${weatherData.current.apparent_temperature}°C`;
+  console.log("Weather data set successfully");
+}
+
+set_weather().catch((error) => {
+  console.error("Error setting weather data:", error);
+});
+
+let spam = false;
+while (true) {
+  const now = new Date();
+  if (now.getMinutes() % 30 === 0) {
+    if (!spam) {
+      // This block runs every 30 minutes at the start of the minute
+      set_weather().catch((error) => {
+        console.error("Error setting weather data:", error);
+      });
+      spam = true;
+    }
+  } else {
+    spam = false;
+  }
+}

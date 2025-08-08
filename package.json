@@ -1,6 +1,9 @@
 {
   "dependencies": {
     "dotenv": "^17.2.1",
-    "pexels": "^1.4.0"
+    "openmeteo": "^1.2.0",
+    "pexels": "^1.4.0",
+    "tsc": "^2.0.4",
+    "typescript": "^5.9.2"
   }
 }

@@ -4,6 +4,7 @@ import { extname } from "node:path";
 import { createHash } from "node:crypto";
 import { createClient } from "pexels";
 import { configDotenv } from "dotenv";
+import { fetchWeatherApi } from "openmeteo";
 
 configDotenv({ path: "./config/.env" });
 
