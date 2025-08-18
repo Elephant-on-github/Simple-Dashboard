@@ -43,8 +43,8 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          ghcr.io/elephant-on-github/simplemusic
-          elephantdev/simplemusic
+          ghcr.io/elephant-on-github/Simple-Dashboard
+          elephantdev/Simple-Dashboard
         tags: |
           type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
           type=sha
