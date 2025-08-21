@@ -383,6 +383,26 @@ const server = Bun.serve({
         });
       }
     }
+
+    //serve name
+    if (url.pathname === "/api/name") {
+      return new Response(JSON.stringify({ name: process.env.Name || "Admin" }), {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "public, max-age=3600",
+        },
+      });
+    }
+    //server long lat
+    if (url.pathname === "/api/location") {
+      return new Response(JSON.stringify({ lat: process.env.LAT || "0", long: process.env.LONG || "0" }), {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "public, max-age=3600",
+        },
+      });
+    }
+
     // Serve index.html with caching enabled
     if (url.pathname === "/") {
       const html = Bun.file("index.html");
