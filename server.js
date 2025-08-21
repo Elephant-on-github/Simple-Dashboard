@@ -8,7 +8,7 @@ import { configDotenv } from "dotenv";
 configDotenv({ path: "./config/.env" });
 
 if (process.env.PEXELS_API_KEY) {
-  const client = createClient(process.env.PEXELS_API_KEY);
+  global.client = createClient(process.env.PEXELS_API_KEY);
   //request splashes from Pexels API
   client.photos
     .search({ query: "Mountains", per_page: 10 })
