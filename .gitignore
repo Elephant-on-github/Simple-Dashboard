@@ -1,3 +1,5 @@
 Album - 360°/
 config/
 node_modules/
+music/
+.env

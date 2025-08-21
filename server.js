@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { createClient } from "pexels";
 import { configDotenv } from "dotenv";
 
-configDotenv({ path: "./config/.env" });
+configDotenv({ path: ".env" });
 
 if (process.env.PEXELS_API_KEY) {
   global.client = createClient(process.env.PEXELS_API_KEY);
