@@ -272,46 +272,50 @@ function initializePlayer() {
   const currentTimeEl = document.getElementById("current-time");
   const durationEl = document.getElementById("duration");
   const volumeSlider = document.getElementById("volume-slider");
-
-  // Play/Pause functionality
-  playBtn.addEventListener("click", () => {
-    if (audio.paused) {
-      audio.play();
-      playBtn.textContent = "⏸";
-      updateMediaSessionPlaybackState('playing');
-    } else {
-      audio.pause();
-      playBtn.textContent = "▶";
-      updateMediaSessionPlaybackState('paused');
-    }
-  });
-
-  // Update play button state based on audio events
-  audio.addEventListener('play', () => {
-    playBtn.textContent = "⏸";
-    updateMediaSessionPlaybackState('playing');
-  });
-
-  audio.addEventListener('pause', () => {
-    playBtn.textContent = "▶";
-    updateMediaSessionPlaybackState('paused');
-  });
-
-  // Previous/Next track
-  prevBtn.addEventListener("click", async () => {
-    currentTrackIndex =
-      (currentTrackIndex - 1 + musicFiles.length) % musicFiles.length;
-    await loadTrack(currentTrackIndex);
+// Play/Pause functionality
+const togglePlayPause = () => {
+  if (audio.paused) {
     audio.play();
-    playBtn.textContent = "⏸";
-  });
+  } else {
+    audio.pause();
+  }
+};
 
-  nextBtn.addEventListener("click", async () => {
-    currentTrackIndex = (currentTrackIndex + 1) % musicFiles.length;
-    await loadTrack(currentTrackIndex);
-    audio.play();
-    playBtn.textContent = "⏸";
-  });
+// Update play button state and media session based on playback state
+const updatePlayButton = (isPlaying) => {
+  if (isPlaying) {
+    playBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M16 19q-.825 0-1.412-.587T14 17V7q0-.825.588-1.412T16 5t1.413.588T18 7v10q0 .825-.587 1.413T16 19m-8 0q-.825 0-1.412-.587T6 17V7q0-.825.588-1.412T8 5t1.413.588T10 7v10q0 .825-.587 1.413T8 19"/></svg>`;
+  } else {
+    playBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475t-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712"/></svg>`;
+  }
+  updateMediaSessionPlaybackState(isPlaying ? 'playing' : 'paused');
+};
+
+// Event listener for play/pause button
+playBtn.addEventListener("click", () => {
+  togglePlayPause();
+});
+
+// Update play button state based on audio events
+audio.addEventListener('play', () => updatePlayButton(true));
+audio.addEventListener('pause', () => updatePlayButton(false));
+
+// Previous/Next track functionality
+const playCurrentTrack = async () => {
+  await loadTrack(currentTrackIndex);
+  audio.play();
+  updatePlayButton(true);
+};
+
+prevBtn.addEventListener("click", () => {
+  currentTrackIndex = (currentTrackIndex - 1 + musicFiles.length) % musicFiles.length;
+  playCurrentTrack();
+});
+
+nextBtn.addEventListener("click", () => {
+  currentTrackIndex = (currentTrackIndex + 1) % musicFiles.length;
+  playCurrentTrack();
+});
 
   // Progress bar
   audio.addEventListener("timeupdate", () => {

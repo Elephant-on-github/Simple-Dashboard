@@ -1,7 +1,6 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: black;
-  margin: 0;
 }
 .photo {
   position: fixed;
@@ -20,7 +19,7 @@ body {
 }
 
 .music{
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 30px;
@@ -31,7 +30,7 @@ body {
 }
 
 .base{
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 30px;
@@ -91,25 +90,23 @@ body {
   color: white;
   font-size: 18px;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  transition: background 0.3s ease, transform 0.3s ease; /* Combine transitions */
 }
 
 .control-btn:hover {
-  transition: background 1s ease;
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.4); /* Slightly more opaque on hover */
+  transform: scale(1.1); /* Add a slight rotation for effect */
 }
 
 .play-btn {
-  width: 60px;
   height: 60px;
-  font-size: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 60px;
 }
+
 
 /* Progress bar */
 .progress-container {
@@ -198,4 +195,56 @@ body {
 
 .clock {
   font-size: 4em;
+}
+
+.greeting {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.large-svg {
+  fill: #fff;
+}
+
+.small-svg {
+  fill: #fff;
+  width: 24px;
+  height: 24px;
+}
+
+.corner {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px;
+  color: white;
+  z-index: 1;
+  border-radius: 10px;
+}
+
+.marginbegone {
+  margin: 0;
+}
+
+.link {
+    position: relative;
+    text-decoration: none; /* Remove default underline */
+    color: #fff; /* Link color */
+}
+
+.link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px; /* Thickness of the underline */
+    background-color: #fff; /* Color of the underline */
+    transform: scaleX(0); /* Start with no width */
+    transform-origin: left; /* Set the origin for the scaling */
+    transition: transform 0.3s linear(0 0%, 0 1.8%, 0.01 3.6%, 0.03 6.35%, 0.07 9.1%, 0.13 11.4%, 0.19 13.4%, 0.27 15%, 0.34 16.1%, 0.54 18.35%, 0.66 20.6%, 0.72 22.4%, 0.77 24.6%, 0.81 27.3%, 0.85 30.4%, 0.88 35.1%, 0.92 40.6%, 0.94 47.2%, 0.96 55%, 0.98 64%, 0.99 74.4%, 1 86.4%, 1 100%); /* Transition effect */
+}
+
+.link:hover::after {
+    transform: scaleX(1); /* Scale to full width on hover */
 }

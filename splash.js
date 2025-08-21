@@ -45,7 +45,7 @@ async function loadSplashes() {
 
     const creditEl = document.getElementById("credit");
     if (creditEl) {
-      creditEl.innerHTML = `Photo by <a href="${photo.photographer_url}" target="_blank">${photo.photographer}</a> on Pexels`;
+      creditEl.innerHTML = `Photo by <a class="link" href="${photo.photographer_url}" target="_blank">${photo.photographer}</a> on Pexels`;
     }
 
     console.log(`Updated to photo ${safeIndex + 1}/${simplifiedPhotos.length}: ${photo.alt}`);
