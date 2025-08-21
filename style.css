@@ -22,7 +22,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 30px;
+  padding: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 500px;
@@ -33,7 +33,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 30px;
+  padding: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 500px;
@@ -276,6 +276,8 @@ body {
   display: flex;
   justify-content: space-around; /* Equal spacing between boxes */
   flex-wrap: wrap; /* Allow boxes to wrap to the next line if needed */
+  margin-right: -10px;
+  margin-left: -10px; /* counteracts margin on the weather-box */
 }
 
 .weather-box {
