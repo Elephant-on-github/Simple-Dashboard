@@ -73,10 +73,10 @@ async function updateWeather() {
       99: "Thunderstorm with heavy hail"
     };
 
-    if (temperatureEl) temperatureEl.textContent = `Temperature: ${temperature} °C`;
-    if (apparentEl) apparentEl.textContent = `Apparent Temperature: ${apparentTemperature} °C`;
-    if (weatherEl) weatherEl.textContent = `Weather: ${weatherDescriptions[weatherCode] || "Unknown"}`;
-    if (windEl) windEl.textContent = `Wind Speed: ${windSpeed} m/s`;
+    if (temperatureEl) temperatureEl.textContent = `${temperature} °C`;
+    if (apparentEl) apparentEl.textContent = `${apparentTemperature} °C`;
+    if (weatherEl) weatherEl.textContent = `${weatherDescriptions[weatherCode] || "Unknown"}`;
+    if (windEl) windEl.textContent = `${windSpeed} m/s`;
 
     console.log(`Weather updated: ${temperature}°C, ${weatherDescriptions[weatherCode] || "Unknown"}`);
   } catch (error) {
