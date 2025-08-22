@@ -126,5 +126,5 @@ async function updateWeather() {
 // Initial weather fetch
 updateWeather();
 
-// Auto-update every 30 minutes
-setInterval(updateWeather, 1800000);
+// Auto-update every minute
+setInterval(updateWeather, 60000);
