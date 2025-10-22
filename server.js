@@ -13,14 +13,13 @@ if (process.env.PEXELS_API_KEY) {
   client.photos
     .search({ query: "Mountains", per_page: 10 })
     .then((photos) => {
-    // console.log("Pexels Photos:", photos);
-    console.log("Photos loaded successfully");
-  })
-  .catch((error) => {
-    console.error("Error fetching Pexels photos:", error);
-  });
-}
-else {
+      // console.log("Pexels Photos:", photos);
+      console.log("Photos loaded successfully");
+    })
+    .catch((error) => {
+      console.error("Error fetching Pexels photos:", error);
+    });
+} else {
   console.error("PEXELS_API_KEY is not defined");
 }
 
@@ -151,6 +150,8 @@ function getContentType(filePath) {
       return "audio/wav";
     case ".ogg":
       return "audio/ogg";
+    case ".opus":
+      return "audio/opus";
     case ".m4a":
       return "audio/mp4";
     case ".flac":
@@ -212,6 +213,98 @@ function parseFilenameMetadata(filename) {
   };
 }
 
+// Add Opus (Ogg) tags parser (OpusTags)
+// Reads up to first 256KB of the file and parses "OpusTags" comment headers.
+async function parseOpusFile(filePath) {
+  try {
+    const buffer = await readFile(filePath, { start: 0, end: 262144 });
+    const parsed = parseOpusTagsBuffer(buffer);
+    return parsed || { title: null, artist: null, album: null, year: null, genre: null };
+  } catch (err) {
+    console.warn(`Error reading opus file ${filePath}:`, err);
+    return { title: null, artist: null, album: null, year: null, genre: null };
+  }
+}
+
+function parseOpusTagsBuffer(buffer) {
+  const sig = Buffer.from("OpusTags");
+  const pos = buffer.indexOf(sig);
+  if (pos === -1) return null;
+
+  let offset = pos + sig.length;
+
+  // Need at least vendor length (4) and comment count (4)
+  if (offset + 8 > buffer.length) return null;
+
+  try {
+    // vendor string length (32-bit little endian)
+    const vendorLen = buffer.readUInt32LE(offset);
+    offset += 4;
+    offset += vendorLen; // skip vendor string
+
+    if (offset + 4 > buffer.length) return null;
+    const userComments = buffer.readUInt32LE(offset);
+    offset += 4;
+
+    const meta = {};
+    for (let i = 0; i < userComments; i++) {
+      if (offset + 4 > buffer.length) break;
+      const len = buffer.readUInt32LE(offset);
+      offset += 4;
+      if (offset + len > buffer.length) break;
+      const comment = buffer.slice(offset, offset + len).toString("utf8");
+      offset += len;
+
+      const eq = comment.indexOf("=");
+      if (eq !== -1) {
+        const key = comment.slice(0, eq).toUpperCase();
+        const value = comment.slice(eq + 1);
+        meta[key] = value;
+      }
+    }
+
+    return {
+      title: meta["TITLE"] || null,
+      artist: meta["ARTIST"] || null,
+      album: meta["ALBUM"] || null,
+      year: meta["DATE"] || meta["YEAR"] || null,
+      genre: meta["GENRE"] || null,
+    };
+  } catch (e) {
+    console.warn("Failed parsing OpusTags:", e);
+    return null;
+  }
+}
+
+// --- new: compute duration for Ogg/Opus by reading last Ogg page granule position ---
+async function getOpusDuration(filePath) {
+  try {
+    const stats = statSync(filePath);
+    const readSize = Math.min(262144, stats.size); // read up to last 256KB
+    const start = Math.max(0, stats.size - readSize);
+    const buf = await readFile(filePath, { start, end: stats.size }); // Bun/node supports start/end here
+
+    // Find last OggS page
+    const lastOgg = buf.lastIndexOf("OggS");
+    if (lastOgg === -1) return null;
+
+    const granuleOffset = lastOgg + 6; // granule position starts 6 bytes after "OggS"
+    // Ensure we have 8 bytes for granule position
+    if (granuleOffset + 8 > buf.length) return null;
+
+    // readBigUInt64LE is used because granule pos can be large
+    const granule = buf.readBigUInt64LE(granuleOffset);
+    // Opus/ogg granule is PCM sample count at 48kHz
+    const samples = Number(granule > BigInt(Number.MAX_SAFE_INTEGER) ? BigInt(Number.MAX_SAFE_INTEGER) : granule);
+    const durationSeconds = samples / 48000;
+    return durationSeconds;
+  } catch (e) {
+    console.warn("Failed to determine opus duration:", e);
+    return null;
+  }
+}
+// --- end new ---
+
 const server = Bun.serve({
   port: 3000,
   async fetch(req) {
@@ -247,7 +340,9 @@ const server = Bun.serve({
     if (url.pathname === "/api/music") {
       let files = await readdir("music/", { recursive: true });
       // Filter to only include mp3 files
-      files = files.filter((file) => file.toLowerCase().endsWith(".mp3"));
+      files = files.filter((file) =>
+        /\.(mp3|wav|ogg|opus|m4a|flac|aac)$/i.test(file)
+      );
       files = shuffle(files); // Shuffle the files for variety
       return new Response(JSON.stringify(files), {
         headers: {
@@ -267,20 +362,35 @@ const server = Bun.serve({
       }
 
       try {
-        // Extract ID3 metadata
-        const id3Metadata = await ID3Parser.parseFile(filePath);
+        // Choose appropriate metadata extractor by extension
+        const ext = extname(filePath).toLowerCase();
+        let extracted = { title: null, artist: null, album: null, year: null, genre: null };
+
+        if (ext === ".opus") {
+          extracted = await parseOpusFile(filePath);
+        } else {
+          // fallback to ID3 parser for mp3 and others that may have ID3
+          extracted = await ID3Parser.parseFile(filePath);
+        }
+
+        // Try to extract duration for opus files (granule-based)
+        let duration = null;
+        if (ext === ".opus") {
+          duration = await getOpusDuration(filePath);
+        }
 
         // Use filename parsing as fallback
         const filenameMetadata = parseFilenameMetadata(filename);
 
-        // Combine metadata, prioritizing ID3 tags over filename parsing
+        // Combine metadata, prioritizing parsed tags over filename parsing
         const metadata = {
-          title: id3Metadata.title || filenameMetadata.title,
-          artist: id3Metadata.artist || filenameMetadata.artist,
-          album: id3Metadata.album || filenameMetadata.album,
-          year: id3Metadata.year,
-          genre: id3Metadata.genre,
+          title: extracted.title || filenameMetadata.title,
+          artist: extracted.artist || filenameMetadata.artist,
+          album: extracted.album || filenameMetadata.album,
+          year: extracted.year,
+          genre: extracted.genre,
           filename: filename,
+          duration: duration !== null ? duration : undefined, // duration in seconds when available
         };
 
         return new Response(JSON.stringify(metadata), {
@@ -321,7 +431,8 @@ const server = Bun.serve({
       const etag = generateETag(stats);
       const range = req.headers.get("range");
       const ifNoneMatch = req.headers.get("if-none-match");
-      const isAudioFile = /\.(mp3|wav|ogg|m4a|flac|aac)$/i.test(filePath);
+      // include .opus in audio detection
+      const isAudioFile = /\.(mp3|wav|ogg|opus|m4a|flac|aac)$/i.test(filePath);
 
       // Check if client has cached version
       if (ifNoneMatch === etag) {
@@ -335,12 +446,25 @@ const server = Bun.serve({
       }
 
       if (range && isAudioFile) {
-        // Range requests for audio files
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;
+        // Debug log for range requests
+        console.log('Range request for', filePath, 'Range header:', range);
 
-        if (start >= stats.size || end >= stats.size || start > end) {
+        const bytesPrefix = 'bytes=';
+        const rangeStr = range.startsWith(bytesPrefix) ? range.slice(bytesPrefix.length) : range;
+        const [startStr, endStr] = rangeStr.split('-');
+        let start = startStr === '' ? null : parseInt(startStr, 10);
+        let end = endStr === '' ? null : parseInt(endStr, 10);
+
+        // Handle suffix ranges like "bytes=-500" (last 500 bytes)
+        if (start === null && end !== null) {
+          start = Math.max(stats.size - end, 0);
+          end = stats.size - 1;
+        } else {
+          if (isNaN(start) || start < 0) start = 0;
+          if (end === null || isNaN(end) || end >= stats.size) end = stats.size - 1;
+        }
+
+        if (start > end || start >= stats.size) {
           return new Response("Range not satisfiable", {
             status: 416,
             headers: {
@@ -350,8 +474,8 @@ const server = Bun.serve({
         }
 
         const chunksize = end - start + 1;
-        const file = readFileSync(filePath);
-        const chunk = file.slice(start, end + 1);
+        const fileBuf = readFileSync(filePath);
+        const chunk = fileBuf.slice(start, end + 1);
 
         return new Response(chunk, {
           status: 206,
@@ -367,6 +491,7 @@ const server = Bun.serve({
       } else if (isAudioFile) {
         // Regular audio file request with strong caching
         const file = Bun.file(filePath);
+        console.log('Serving full audio', filePath, 'Content-Type:', getContentType(filePath), 'Size:', stats.size);
         return new Response(file, {
           headers: {
             "Accept-Ranges": "bytes",
@@ -391,21 +516,30 @@ const server = Bun.serve({
 
     //serve name
     if (url.pathname === "/api/name") {
-      return new Response(JSON.stringify({ name: process.env.Name || "Admin" }), {
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=3600",
-        },
-      });
+      return new Response(
+        JSON.stringify({ name: process.env.Name || "Admin" }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "public, max-age=3600",
+          },
+        }
+      );
     }
     //server long lat
     if (url.pathname === "/api/location") {
-      return new Response(JSON.stringify({ lat: process.env.LAT || "0", long: process.env.LONG || "0" }), {
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=3600",
-        },
-      });
+      return new Response(
+        JSON.stringify({
+          lat: process.env.LAT || "0",
+          long: process.env.LONG || "0",
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "public, max-age=3600",
+          },
+        }
+      );
     }
 
     // Serve index.html with caching enabled
@@ -444,6 +578,8 @@ const server = Bun.serve({
 
 console.log(`Server running at http://localhost:${server.port}`);
 let files = await readdir("music/", { recursive: true });
-// Filter to only include mp3 files
-files = files.filter((file) => file.toLowerCase().endsWith(".mp3"));
+// Filter to only include files matching specified audio formats
+files = files.filter((file) =>
+  /\.(mp3|wav|ogg|opus|m4a|flac|aac)$/i.test(file)
+);
 console.log("Serving music files:", files);
