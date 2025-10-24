@@ -28,8 +28,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 500px;
   width: -webkit-fill-available;
-  margin: 5px auto;
-  grid-row: 2
+  margin: auto;
+  grid-row: 2;
 }
 
 .base {
@@ -40,7 +40,7 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 500px;
-  margin: 5px auto;
+  margin: auto;
   width: -webkit-fill-available;
 }
 
@@ -330,12 +330,12 @@ h1 {
   height: 4em; /* Adjust size as needed */
 }
 
-.weather-symbol{
+.weather-symbol {
   height: 4em;
 }
 
 .content {
-  display:grid;
+  display: grid;
   grid-template-columns: 400px 500px;
   grid-template-rows: auto auto;
   justify-content: center;
