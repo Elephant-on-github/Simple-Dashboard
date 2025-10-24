@@ -349,5 +349,9 @@ h1 {
 }
 
 .feelings {
-  padding: 16px 0;
+  padding: 0 0 16px;
+}
+
+.bottommarginremove {
+  margin-bottom: 0px;
 }
