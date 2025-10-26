@@ -115,13 +115,13 @@ async function updateWeather() {
     if (iconEl) iconEl.innerHTML = `${weathericons[weatherCode] || ""}`;
     //function to set feelings description based on temperature
     let feelingsDescription = "";
-    if (temperature <= 0) {
+    if (apparentTemperature <= 0) {
       feelingsDescription = "Brrr! It's freezing outside!";
-    } else if (temperature > 0 && temperature <= 10) {
+    } else if (apparentTemperature > 0 && apparentTemperature <= 10) {
       feelingsDescription = "It's quite chilly today.";
-    } else if (temperature > 10 && temperature <= 20) {
+    } else if (apparentTemperature > 10 && apparentTemperature <= 20) {
       feelingsDescription = "Mild and pleasant weather.";
-    } else if (temperature > 20 && temperature <= 30) {
+    } else if (apparentTemperature > 20 && apparentTemperature <= 30) {
       feelingsDescription = "Warm and sunny!";
     } else {
       feelingsDescription = "It's hot outside, stay hydrated!";
