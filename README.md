@@ -1,6 +1,6 @@
-# Simple container that runs a music player
+# Simple container that runs a Simple Dashboard with Weather, Music and Time
 
-Mount folder containing mp3 to `/app/music/` e.g `-v /media/:/app/music/`
+Mount a folder containing `.mp3` or `.opus` to `/app/music/` e.g `-v /media/:/app/music/`
 
 Expose ports to `3000` e.g `-p 3000:3000`
 
