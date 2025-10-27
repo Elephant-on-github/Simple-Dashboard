@@ -18,7 +18,7 @@ services:
 networks: {}
 ```
 
-You will also need to add a .env with your personal information in the following format. 
+You will also need to add a `.env` with your personal information in the following format. 
 Don't worry this is only used for local settings. 
 
 ```env
