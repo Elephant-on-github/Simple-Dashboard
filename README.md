@@ -1,8 +1,8 @@
 # Simple container that runs a music player
 
-Mount folder containing mp3 to /app/music/ e.g -v /media/:/app/music/
+Mount folder containing mp3 to `/app/music/` e.g `-v /media/:/app/music/`
 
-Expose ports to 3000 e.g -p 3000:3000
+Expose ports to `3000` e.g `-p 3000:3000`
 
 ## Example compose.yaml
 ```yaml
