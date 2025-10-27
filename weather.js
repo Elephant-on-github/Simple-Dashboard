@@ -42,6 +42,7 @@ async function updateWeather() {
     const windEl = document.querySelector(".wind");
     const apparentEl = document.querySelector(".apparent");
     const iconEl = document.querySelector(".weather-symbol");
+    const feelingsEl = document.querySelector(".feelings");
 
     const weatherDescriptions = {
       0: "Clear sky",
@@ -112,6 +113,20 @@ async function updateWeather() {
       }`;
     if (windEl) windEl.textContent = `${windSpeed} m/s`;
     if (iconEl) iconEl.innerHTML = `${weathericons[weatherCode] || ""}`;
+    //function to set feelings description based on temperature
+    let feelingsDescription = "";
+    if (apparentTemperature <= 0) {
+      feelingsDescription = "Brrr! It's freezing outside!";
+    } else if (apparentTemperature > 0 && apparentTemperature <= 10) {
+      feelingsDescription = "It's quite chilly today.";
+    } else if (apparentTemperature > 10 && apparentTemperature <= 20) {
+      feelingsDescription = "Mild and pleasant weather.";
+    } else if (apparentTemperature > 20 && apparentTemperature <= 30) {
+      feelingsDescription = "Warm and sunny!";
+    } else {
+      feelingsDescription = "It's hot outside, stay hydrated!";
+    }
+    if (feelingsEl) feelingsEl.textContent = `${feelingsDescription}`;
 
     console.log(
       `Weather updated: ${temperature}°C, ${

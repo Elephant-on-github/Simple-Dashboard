@@ -1,6 +1,7 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: black;
+  margin: 0px;
 }
 .photo {
   position: fixed;
@@ -26,7 +27,9 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 500px;
-  margin: 5px auto;
+  width: -webkit-fill-available;
+  margin: auto;
+  grid-row: 2;
 }
 
 .base {
@@ -37,7 +40,8 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-width: 500px;
-  margin: 5px auto;
+  margin: auto;
+  width: -webkit-fill-available;
 }
 
 /* Hide default audio controls */
@@ -219,6 +223,7 @@ body {
   color: white;
   z-index: 1;
   border-radius: 10px;
+  width: fit-content;
 }
 
 .marginbegone {
@@ -279,6 +284,8 @@ body {
   margin-right: -10px;
   margin-left: -10px; /* counteracts margin on the weather-box */
   align-items: stretch;
+  align-content: center;
+  height: -webkit-fill-available;
 }
 
 .weather-box {
@@ -323,6 +330,28 @@ h1 {
   height: 4em; /* Adjust size as needed */
 }
 
-.weather-symbol{
+.weather-symbol {
   height: 4em;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 400px 500px;
+  grid-template-rows: auto auto;
+  justify-content: center;
+  align-content: center;
+  height: 100vh;
+  gap: 8px;
+}
+
+.spantwo {
+  grid-row: 1 / span 2;
+}
+
+.feelings {
+  padding: 0 0 16px;
+}
+
+.bottommarginremove {
+  margin-bottom: 0px;
 }
