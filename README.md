@@ -26,4 +26,5 @@ PEXELS_API_KEY = Your_API_Key_Here
 Name = Your_Name_Here
 LAT = 40 #Latitude for weather
 LONG = 30 #Longitude for weather
+PEXELS_SEARCH = Rolling hills # Your preferred search term for background images
 ```

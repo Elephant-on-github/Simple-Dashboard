@@ -2,23 +2,53 @@ import { readdir, readFile } from "node:fs/promises";
 import { existsSync, statSync, readFileSync } from "node:fs";
 import { extname } from "node:path";
 import { createHash } from "node:crypto";
-import { createClient } from "pexels";
 import { configDotenv } from "dotenv";
 
 configDotenv({ path: ".env" });
 
-if (process.env.PEXELS_API_KEY) {
-  global.client = createClient(process.env.PEXELS_API_KEY);
-  //request splashes from Pexels API
-  client.photos
-    .search({ query: "Mountains", per_page: 10 })
-    .then((photos) => {
-      // console.log("Pexels Photos:", photos);
-      console.log("Photos loaded successfully");
-    })
-    .catch((error) => {
-      console.error("Error fetching Pexels photos:", error);
+// Helper: call Pexels REST API directly (uses PEXELS_API_KEY and optional PEXELS_SEARCH)
+const PEXELS_API_URL = "https://api.pexels.com/v1/search";
+async function fetchPexelsPhotos(query = process.env.PEXELS_SEARCH || "Mountains", perPage = 10) {
+  const apiKey = process.env.PEXELS_API_KEY;
+  if (!apiKey) {
+    console.error("PEXELS_API_KEY is not defined");
+    return { photos: [], total_results: 0 };
+  }
+
+  const url = new URL(PEXELS_API_URL);
+  url.searchParams.set("query", query);
+  url.searchParams.set("per_page", String(Math.min(Math.max(Number(perPage) || 1, 1), 80)));
+  url.searchParams.set("orientation", "landscape");
+  url.searchParams.set("size", "large");
+
+  try {
+    const res = await fetch(url.toString(), {
+      headers: { Authorization: apiKey, Accept: "application/json" },
     });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      console.error("Pexels API error", res.status, text);
+      return { photos: [], total_results: 0 };
+    }
+    const json = await res.json();
+    return {
+      photos: Array.isArray(json.photos) ? json.photos : [],
+      total_results: json.total_results || 0,
+    };
+  } catch (err) {
+    console.error("Error fetching Pexels photos:", err);
+    return { photos: [], total_results: 0 };
+  }
+}
+
+// Warm-up (non-blocking) — uses PEXELS_SEARCH from .env when available
+if (process.env.PEXELS_API_KEY) {
+  (async () => {
+    const q = process.env.PEXELS_SEARCH || "Mountains";
+    const r = await fetchPexelsPhotos(q, 10);
+    if (r.photos.length) console.log("Pexels photos loaded successfully");
+    else console.log("Pexels: no photos loaded (empty response)");
+  })();
 } else {
   console.error("PEXELS_API_KEY is not defined");
 }
@@ -311,28 +341,22 @@ const server = Bun.serve({
     const url = new URL(req.url);
 
     if (url.pathname.startsWith("/api/photo")) {
-      const query = url.searchParams.get("query") || "mountains";
-      const perPage = parseInt(url.searchParams.get("per_page")) || 10;
+      const query = url.searchParams.get("query") || process.env.PEXELS_SEARCH || "mountains";
+      const perPage = Math.min(parseInt(url.searchParams.get("per_page")) || 10, 80);
 
       try {
-        const result = await client.photos.search({ query, per_page: perPage });
-        return new Response(
-          JSON.stringify({
-            photos: Array.isArray(result.photos) ? result.photos : [],
-            total_results: result.total_results || 0,
-          }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "Cache-Control": "public, max-age=300",
-            },
-          }
-        );
+        const result = await fetchPexelsPhotos(query, perPage);
+        return new Response(JSON.stringify(result), {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "public, max-age=300",
+          },
+        });
       } catch (error) {
         console.error("Error fetching Pexels photos:", error);
         return new Response(JSON.stringify({ photos: [], total_results: 0 }), {
           headers: { "Content-Type": "application/json" },
-          status: 200, // ✅ Return success so frontend still runs
+          status: 200,
         });
       }
     }
