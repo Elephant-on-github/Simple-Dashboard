@@ -1,4 +1,4 @@
-FROM docker://dhi.io/bun:1-alpine3.22
+FROM dhi.io/bun:1-alpine3.22
 
 # Set the working directory
 WORKDIR /app
