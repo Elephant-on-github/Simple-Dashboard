@@ -1,4 +1,4 @@
-FROM dhi.io/bun:1-alpine3.22
+FROM dhi.io/bun:1-debian13-dev
 
 # Set the working directory
 WORKDIR /app
