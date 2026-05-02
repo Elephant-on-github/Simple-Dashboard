@@ -48,11 +48,11 @@ body {
   position: relative;
 }
 
-.base:hover {
+/*.base:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
   border-color: rgba(255, 255, 255, 0.2);
-}
+}*/
 
 /* Human touch: subtle texture overlay */
 .base::before {
@@ -81,7 +81,7 @@ body {
 }
 
 .music .internal {
-  background: rgba(255, 255, 255, 0.05);
+/*  background: rgba(255, 255, 255, 0.05);*/
   border-radius: 15px;
   padding: 25px;
   text-align: center;
@@ -126,7 +126,7 @@ body {
   align-items: center;
   gap: 20px;
   margin: 20px 0;
-  position: relative;
+/*  position: relative;*/
 }
 
 /* Subtle human touch: slightly imperfect spacing */
@@ -221,7 +221,7 @@ body {
   border-radius: 2px;
   outline: none;
   cursor: pointer;
-  -webkit-appearance: none;
+/*  -webkit-appearance: none;*/
 }
 
 .volume-slider::-webkit-slider-thumb {
@@ -311,7 +311,7 @@ body {
 }
 
 .weather-box {
-  background: rgba(255, 255, 255, 0.1);
+/*  background: rgba(255, 255, 255, 0.1);*/
   border-radius: 15px;
   text-align: center;
   color: white;
@@ -328,14 +328,14 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.weather-box:hover {
+/*.weather-box:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(1.02);
   border-color: rgba(255, 255, 255, 0.15);
-}
+}*/
 
 .temperature-box {
-  background: rgba(255, 255, 255, 0.15);
+/*  background: rgba(255, 255, 255, 0.15);*/
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -356,7 +356,7 @@ body {
 .feelings {
   padding: 0 0 16px;
   grid-column: 1 / -1;
-  font-size: 1.2em;
+  font-size: 1.5em;
   font-weight: 600;
 }
 
@@ -370,10 +370,16 @@ h1 {
 }
 
 .weather-symbol {
-  font-size: 4em;
+/*  font-size: 4em;*/
   height: auto;
   line-height: 1;
 }
+
+svg.weather-svg {
+    width: 4em;
+    height: 4em;
+}
+
 
 /* Corner credit */
 .corner {
