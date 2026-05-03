@@ -10,6 +10,7 @@
       name="description"
       content="Simple Dashboard from a self-hosted server"
     />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="style.css" async />
     <script type="module" src="music.js" async></script>
     <script type="module" src="splash.js" async></script>
@@ -20,13 +21,13 @@
   </head>
   <body>
     <div class="content">
-          <div class="base">
+          <div class="base time-greeting">
       <div class="internal">
         <div class="greeting text">Hello, Admin.</div>
         <div class="clock text">00:00:00</div>
       </div>
     </div>
-    <div class="music">
+    <div class="base music">
       <div class="internal">
         <div class="track-info">
           <div class="track-title" id="track-title">Loading...</div>
@@ -117,11 +118,12 @@
       </div>
     </div>
     <div class="base text spantwo">
-      <div class="weather-container">
-        <div>
+              <div>
           <h1 class="big-text feelings">The Weather is Cold</h1>
         </div>
-        <div class="weather-box">
+      <div class="weather-container">
+
+        <div class="weather-box temperature-box">
           <h1 class="big-text temperature">20</h1>
           <p class="caption">Temperature</p>
         </div>
@@ -134,14 +136,14 @@
           <p class="caption">Wind Speed</p>
         </div>
         <div class="weather-box bottommarginremove">
-          <h1 class="big-text apparent">18</h1>
+          <h1 class="big-text apparent">20</h1>
           <p class="caption">Apparent Temperature</p>
         </div>
       </div>
     </div>
     </div>
-    <div class="base text corner marginbegone">
-      <p class="marginbegone" id="credit">Photo provided by pexels</p>
+    <div class="corner">
+      <p class="credit-text" id="credit">Photo provided by pexels</p>
     </div>
 
     <div class="photo">
